@@ -12,7 +12,7 @@ dotenv.config({ path: "./config/config.env" });
 app.use(express.static(path.join(__dirname, "views")));
 app.use(express.static(path.join(__dirname, "public")));
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 const server = app.listen(
   PORT,
@@ -24,7 +24,7 @@ const server = app.listen(
 
 const io = socketio(server);
 io.on("connection", function (socket) {
-  console.log("a user connected");
+  console.log(`A User connected`.white.bold);
 
   socket.on("chat message", (message) => {
     console.log(message);
@@ -33,7 +33,7 @@ io.on("connection", function (socket) {
       try {
         const sessionId = uuid.v4();
         const sessionClient = new dialogflow.SessionsClient({
-          keyFilename: "./WebSpeechAIbot-41194528781e.json",
+          keyFilename: "./chatbot-ymjk-a08af70a6622.json",
         });
         const sessionPath = sessionClient.projectAgentSessionPath(
           projectId,
@@ -51,6 +51,7 @@ io.on("connection", function (socket) {
         const responses = await sessionClient.detectIntent(request);
 
         console.log("Detected intent");
+        console.log(request)
         const result = responses[0].queryResult.fulfillmentText;
         socket.emit("bot reply", result);
         console.log(result);
